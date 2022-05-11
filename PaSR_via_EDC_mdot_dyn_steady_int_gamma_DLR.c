@@ -72,7 +72,8 @@ char *strs[num_species]={"o2", "h2", "h2o"}; 	/* definition of species that will
     UDM-6 = Mixture fraction dissipation rate source term
     UDM-7 = Cmix in dynamic formulation
     UDM-8 = Integral timescale
-    UDM-9 = Kolmogorov timescale */
+    UDM-9 = Kolmogorov timescale 
+    UDM-10 = Damkhöler number*/
 
 /* --------------------- end of the instructions -------------------- */
 
@@ -245,10 +246,9 @@ DEFINE_EDC_MDOT(edc_mdot, c, t, mdot, calc_tau, tau)
 
     tau_k = pow(nu/ted, 0.5); 	/*Kolmogorov time-scale*/
     tau_i = C_K(c,t)/ted;       /*Integral time-scale*/
-    C_UDMI(c,t,8)=Cmix*tau_i;
+    C_UDMI(c,t,8)=tau_i;
     C_UDMI(c,t,9)=tau_k;
 
-    tau_c=Cell_Chemical_Time_Scale_2016(c, t, strs, num_species); 
 
     if(counter==1)
       {
@@ -284,11 +284,11 @@ DEFINE_EDC_MDOT(edc_mdot, c, t, mdot, calc_tau, tau)
       	C_UDMI(c,t,7)=Cmix_eq_dynamic;
 	}
   
-      /*tau_c=Cell_Chemical_Time_Scale_2016(c, t, strs, num_species); ALE */
+      tau_c=Cell_Chemical_Time_Scale_2016(c, t, strs, num_species);
       C_UDMI(c,t,2)=tau_c;
       C_UDMI(c,t,1)=MIN(tau_m,tau_c);
       C_UDMI(c,t,3)=tau_m;
-      /*C_UDMI(c,t,10) = C_UDMI(c,t,3)/C_UDMI(c,t,2);*/
+      C_UDMI(c,t,10) = C_UDMI(c,t,3)/C_UDMI(c,t,2);
       
       
       *tau=MIN(tau_m,tau_c);
